@@ -24,7 +24,7 @@ export const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 /**
  * @swagger
@@ -48,7 +48,7 @@ userRouter.post("/create", createUser);
  *       '200':
  *         description: Successful response
  */
-userRouter.get("/get",verify, getAllUser);
+userRouter.get("/get", verify, getAllUser);
 /**
  * @swagger
  * /user/{id}:
@@ -68,7 +68,7 @@ userRouter.get("/get",verify, getAllUser);
  *         description: Successful response
  */
 
-userRouter.get("/:id",verify,  getUserById);
+userRouter.get("/:id", verify, getUserById);
 
 /**
  * @swagger
@@ -88,7 +88,7 @@ userRouter.get("/:id",verify,  getUserById);
  *       '200':
  *         description: Successful response
  */
-userRouter.put("/:id",verify,  updateUser);
+userRouter.put("/:id", verify, updateUser);
 
 /**
  * @swagger
@@ -108,7 +108,7 @@ userRouter.put("/:id",verify,  updateUser);
  *       '200':
  *         description: Successful response
  */
-userRouter.delete("/:id",  deleteUser);
+userRouter.delete("/:id", deleteUser);
 
 userRouter.post("/upload/:id", upload.single("file"), uploadImageUserid);
 

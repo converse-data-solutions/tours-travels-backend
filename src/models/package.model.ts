@@ -5,7 +5,6 @@ import {
   Column,
   DataType,
   Default,
-  AllowNull,
   PrimaryKey,
   AutoIncrement,
 } from "sequelize-typescript";
@@ -30,7 +29,7 @@ export class Package  extends Model<Package>{
   file_name!: string;
 
   @Column(DataType.STRING)
-  destination!:string;
+  description!:string;
 
   @Column(DataType.STRING)
   price!:string;
@@ -42,7 +41,10 @@ export class Package  extends Model<Package>{
   days_and_night!:string;
 
   @Column(DataType.STRING)
-  description!:string;
+  country!:string;
+
+  @Column(DataType.STRING)
+  state!:string;
 
   @Column(DataType.TINYINT)
   published!:number;

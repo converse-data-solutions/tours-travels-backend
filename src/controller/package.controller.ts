@@ -2,31 +2,30 @@ import { RequestHandler } from "express";
 import fs from "fs-extra";
 import { Package } from "../models/package.model";
 
+export const createPackage: RequestHandler = async (req, res, next) => {
+  try {
+    var packageList = await Package.create({ ...req.body });
 
+    return res.status(200).json({
+      isSuccess: true,
+      message: "Package created successfully",
+      data: packageList,
+    });
+  } catch (ex: any) {
+    console.log(ex);
+    return res.status(400).json({
+      isSuccess: false,
+      message: "package not created ",
+      data: ex.errors,
+    });
+  }
+};
 
-export const createPackage:RequestHandler=async(req,res,next)=>{
-
-try{
-  var packageList=await Package.create({...req.body});
- 
-  
-  return res.status(200).json({
-    isSuccess: true,
-    message: "Package created successfully",
-    data: packageList,
-  });
-
-}catch (ex: any) {
-  console.log(ex)
-  return res.status(400).json({
-    isSuccess: false,
-    message: "package not created ",
-    data: ex.errors,
-  });
-}
-}
-
-export const uploadImageByPackageId: RequestHandler = async (req, res, next) => {
+export const uploadImageByPackageId: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
   try {
     console.log(req.body);
     const { id } = req.params;
@@ -48,7 +47,7 @@ export const uploadImageByPackageId: RequestHandler = async (req, res, next) => 
     return res.status(201).json({
       isSuccess: true,
       message: "Package image updated successfully",
-      data:updatedPackage ,
+      data: updatedPackage,
     });
   } catch (error) {
     console.error("Error updating user:", error);
@@ -59,7 +58,6 @@ export const uploadImageByPackageId: RequestHandler = async (req, res, next) => 
     });
   }
 };
-
 
 export const deletePackage: RequestHandler = async (req, res, next) => {
   try {
@@ -83,10 +81,10 @@ export const getAllPackage: RequestHandler = async (req, res, next) => {
   try {
     const allPackageinfo: Package[] = await Package.findAll();
 
-    const PackageWithImages:Package [] = [];
+    const PackageWithImages: Package[] = [];
 
-     for (const packageinfo of allPackageinfo) {
-      const filePath = `/home/converse/projects/ToursiteBE/travels-backend/PackageUploads/${packageinfo?.file_name}`;
+    for (const packageinfo of allPackageinfo) {
+      const filePath = `/home/converse/projects/ToursiteBE/travels-backend/tours-travels-backend/PackageUploads/${packageinfo?.file_name}`;
 
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
@@ -96,8 +94,8 @@ export const getAllPackage: RequestHandler = async (req, res, next) => {
         packageinfo.file_name = dataURL;
       }
 
-       PackageWithImages.push(packageinfo);
-   }
+      PackageWithImages.push(packageinfo);
+    }
 
     return res.status(200).json({
       isSuccess: true,
@@ -105,7 +103,7 @@ export const getAllPackage: RequestHandler = async (req, res, next) => {
       data: PackageWithImages,
     });
   } catch (ex: any) {
-    console.log(ex)
+    console.log(ex);
     return res
       .status(400)
       .json({ isSuccess: false, message: "", data: ex.errors });
@@ -118,7 +116,7 @@ export const getPackageById: RequestHandler = async (req, res, next) => {
   if (!packageInfo) {
     return res.status(404).json({ error: "User not found" });
   }
-  const filePath = `/home/converse/projects/ToursiteBE/travels-backend/PackageUploads/${packageInfo?.file_name}`;
+  const filePath = `/home/converse/projects/ToursiteBE/travels-backend/tours-travels-backend/PackageUploads/${packageInfo?.file_name}`;
 
   if (!fs.existsSync(filePath)) {
   }

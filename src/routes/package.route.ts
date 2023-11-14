@@ -1,7 +1,14 @@
 import { Router } from "express";
 
-
-import { createPackage,deletePackage,updatePackage,getAllPackage,getPackageById,uploadImageByPackageId } from "../controller/package.controller";
+import {
+  createPackage,
+  deletePackage,
+  updatePackage,
+  getAllPackage,
+  getPackageById,
+  uploadImageByPackageId,
+} from "../controller/package.controller";
+import { verify } from "../controller/user.controller";
 import multer from "multer";
 
 const packageRouter = Router();
@@ -16,7 +23,7 @@ export const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 /**
  * @swagger
@@ -39,7 +46,7 @@ packageRouter.post("/create", createPackage);
  *       '200':
  *         description: Successful response
  */
-packageRouter.get("/get", getAllPackage);
+packageRouter.get("/get", verify, getAllPackage);
 /**
  * @swagger
  * /package/{id}:
@@ -59,7 +66,7 @@ packageRouter.get("/get", getAllPackage);
  *         description: Successful response
  */
 
-packageRouter.get("/:id",  getPackageById);
+packageRouter.get("/:id", verify, getPackageById);
 /**
  * @swagger
  * /package/{id}:
@@ -78,7 +85,7 @@ packageRouter.get("/:id",  getPackageById);
  *       '200':
  *         description: Successful response
  */
-packageRouter.put("/:id"  ,updatePackage);
+packageRouter.put("/:id", verify, updatePackage);
 /**
  * @swagger
  * /user/{id}:
@@ -97,7 +104,11 @@ packageRouter.put("/:id"  ,updatePackage);
  *       '200':
  *         description: Successful response
  */
-packageRouter.delete("/:id", deletePackage);
-packageRouter.post("/upload/:id", upload.single("file"), uploadImageByPackageId);
+packageRouter.delete("/:id", verify, deletePackage);
+packageRouter.post(
+  "/upload/:id",
+  upload.single("file"),
+  uploadImageByPackageId
+);
 
 export default packageRouter;

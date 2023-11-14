@@ -72,7 +72,7 @@ export const getAllUser: RequestHandler = async (req, res, next) => {
     const usersWithImages: Userinfo[] = [];
 
     for (const userinfo of allUserinfo) {
-      const filePath = `/home/converse/projects/ToursiteBE/Uploads/${userinfo?.file_name}`;
+      const filePath = `/home/converse/projects/ToursiteBE/travels-backend/tours-travels-backend/Uploads/${userinfo?.file_name}`;
 
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
@@ -91,7 +91,7 @@ export const getAllUser: RequestHandler = async (req, res, next) => {
       data: usersWithImages,
     });
   } catch (ex: any) {
-    console.log(ex)
+    console.log(ex);
     return res
       .status(400)
       .json({ isSuccess: false, message: "", data: ex.errors });
@@ -105,7 +105,7 @@ export const getUserById: RequestHandler = async (req, res, next) => {
   if (!userinfo) {
     return res.status(404).json({ error: "User not found" });
   }
-  const filePath = `/home/converse/projects/ToursiteBE/Uploads/${userinfo?.file_name}`;
+  const filePath = `/home/converse/projects/ToursiteBE/travels-backend/tours-travels-backend/Uploads/${userinfo?.file_name}`;
 
   if (!fs.existsSync(filePath)) {
   }
