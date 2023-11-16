@@ -21,8 +21,6 @@ export const verify = (req: any, res: any, next: any) => {
     req.user = decoded;
     next();
   } catch (error) {
-    console.log(error);
-
     return res.status(401).json({
       isSuccess: false,
       message: "Unauthorized: Invalid token",
@@ -65,14 +63,15 @@ export const deleteUser: RequestHandler = async (req, res, next) => {
       .json({ isSuccess: false, message: "", data: ex.errors });
   }
 };
+
 export const getAllUser: RequestHandler = async (req, res, next) => {
   try {
     const allUserinfo: Userinfo[] = await Userinfo.findAll();
 
-    const usersWithImages: Userinfo[] = [];
+    const usersWithImages: any[] = [];
 
     for (const userinfo of allUserinfo) {
-      const filePath = `/home/converse/projects/ToursiteBE/travels-backend/tours-travels-backend/Uploads/${userinfo?.file_name}`;
+      const filePath = `../../Uploads/${userinfo?.file_name}`;
 
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
@@ -85,13 +84,24 @@ export const getAllUser: RequestHandler = async (req, res, next) => {
       usersWithImages.push(userinfo);
     }
 
+    const responseData = usersWithImages.map((user) => {
+      if (user.file_name !== null) {
+        return {
+          ...user.toJSON(),
+          file_name: user.file_name,
+        };
+      } else {
+        const { file_name, ...userDetailsWithoutFile } = user.toJSON();
+        return userDetailsWithoutFile;
+      }
+    });
+
     return res.status(200).json({
       isSuccess: true,
       message: "Users fetched successfully",
-      data: usersWithImages,
+      data: responseData,
     });
   } catch (ex: any) {
-    console.log(ex);
     return res
       .status(400)
       .json({ isSuccess: false, message: "", data: ex.errors });
@@ -105,21 +115,25 @@ export const getUserById: RequestHandler = async (req, res, next) => {
   if (!userinfo) {
     return res.status(404).json({ error: "User not found" });
   }
-  const filePath = `/home/converse/projects/ToursiteBE/travels-backend/tours-travels-backend/Uploads/${userinfo?.file_name}`;
 
-  if (!fs.existsSync(filePath)) {
+  const filePath = `../../Uploads/${userinfo?.file_name}`;
+  const responseData = {
+    message: "User fetched successfully",
+    data: {
+      ...userinfo.toJSON(),
+      ...(userinfo.file_name ? { file_name: getFileDataURL(filePath) } : {}),
+    },
+  };
+
+  return res.status(200).json(responseData);
+};
+
+const getFileDataURL = (filePath: string) => {
+  if (fs.existsSync(filePath)) {
+    const fileBuffer = fs.readFileSync(filePath);
+    return `data:image/jpeg;base64,${fileBuffer.toString("base64")}`;
   }
-  const fileBuffer = fs.readFileSync(filePath);
-
-  const dataURL = `data:image/jpeg;base64,${fileBuffer.toString("base64")}`;
-
-  if (dataURL) {
-    userinfo.file_name = dataURL;
-  }
-
-  return res
-    .status(200)
-    .json({ message: "User fetched successfully", data: userinfo });
+  return null;
 };
 
 export const updateUser: RequestHandler = async (req, res, next) => {
@@ -142,7 +156,6 @@ export const updateUser: RequestHandler = async (req, res, next) => {
 
 export const uploadImageUserid: RequestHandler = async (req, res, next) => {
   try {
-    console.log(req.body);
     const { id } = req.params;
     const file_name = req.file?.filename;
 
@@ -165,7 +178,6 @@ export const uploadImageUserid: RequestHandler = async (req, res, next) => {
       data: updatedUserinfo,
     });
   } catch (error) {
-    console.error("Error updating user:", error);
     return res.status(500).json({
       isSuccess: false,
       message: "Internal server error",
@@ -186,10 +198,11 @@ export const SignInUser: RequestHandler = async (req, res, next) => {
       return res.status(404).json({ error: "User not found" });
     }
     if (password === Signin.password) {
+      const expiresIn = "1h";
       const accesstoken = jwt.sign(
         { userId: Signin.id, email: Signin.email },
         SecureKey,
-        { expiresIn: "1d" }
+        { expiresIn }
       );
 
       const refreshToken = jwt.sign(
@@ -210,7 +223,6 @@ export const SignInUser: RequestHandler = async (req, res, next) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };

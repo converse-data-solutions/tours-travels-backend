@@ -34,7 +34,7 @@ export class Package  extends Model<Package>{
   @Column(DataType.STRING)
   price!:string;
 
-  @Column(DataType.NUMBER)
+  @Column(DataType.INTEGER)
   no_of_person!:number;
 
   @Column(DataType.STRING)
