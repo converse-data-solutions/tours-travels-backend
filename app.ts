@@ -7,7 +7,34 @@ import cors from "cors";
 const app = express();
 const cookieParser = require('cookie-parser');
 
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+
 const allowedOrigins ="*";
+
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'API Docs',
+    version: '1.0.0',
+    description:
+      'This is a REST API application made with Express',
+  },
+  servers: [
+    {
+      url: 'http://localhost:8000',
+      description: 'Development server',
+    },
+  ],
+};
+
+const swaggerOptions = {
+  swaggerDefinition,
+  // Paths to files containing OpenAPI definitions
+  apis: ['./src/routes/*.ts'],
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 const options: cors.CorsOptions = {
   origin: allowedOrigins,
@@ -40,6 +67,8 @@ connection
   .catch((err: any) => {
     console.log("Error", err);
   });
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.listen(process.env.PORT || 8000, () => {
   console.log(`Server started on port ${process.env.PORT || 8000}`);
