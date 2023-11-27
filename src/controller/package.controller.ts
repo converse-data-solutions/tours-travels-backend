@@ -23,7 +23,7 @@ export const createPackage: RequestHandler = async (req, res, next) => {
 export const uploadImageByPackageId: RequestHandler = async (
   req,
   res,
-  next
+  next,
 ) => {
   try {
     const { id } = req.params;
@@ -31,7 +31,7 @@ export const uploadImageByPackageId: RequestHandler = async (
 
     const [updatedRowCount, updatedPackage] = await Package.update(
       { file_name },
-      { where: { id: id }, returning: true }
+      { where: { id: id }, returning: true },
     );
 
     if (updatedRowCount === 0) {
@@ -86,7 +86,7 @@ export const getAllPackage: RequestHandler = async (req, res, next) => {
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
         const dataURL = `data:image/jpeg;base64,${fileBuffer.toString(
-          "base64"
+          "base64",
         )}`;
         packageInfo.file_name = dataURL;
       }

@@ -76,7 +76,7 @@ export const getAllUser: RequestHandler = async (req, res, next) => {
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
         const dataURL = `data:image/jpeg;base64,${fileBuffer.toString(
-          "base64"
+          "base64",
         )}`;
         userinfo.file_name = dataURL;
       }
@@ -161,7 +161,7 @@ export const uploadImageUserid: RequestHandler = async (req, res, next) => {
 
     const [updatedRowCount, updatedUserinfo] = await Userinfo.update(
       { file_name },
-      { where: { id: id }, returning: true }
+      { where: { id: id }, returning: true },
     );
 
     if (updatedRowCount === 0) {
@@ -202,12 +202,12 @@ export const SignInUser: RequestHandler = async (req, res, next) => {
       const accesstoken = jwt.sign(
         { userId: Signin.id, email: Signin.email },
         SecureKey,
-        { expiresIn }
+        { expiresIn },
       );
 
       const refreshToken = jwt.sign(
         { userId: Signin.id, email: Signin.email },
-        SecureKey
+        SecureKey,
       );
 
       res.cookie("access_token", accesstoken, { httpOnly: true });
