@@ -1,4 +1,3 @@
-import { TinyIntegerDataType } from "sequelize";
 import {
   Table,
   Model,
@@ -7,13 +6,16 @@ import {
   Default,
   PrimaryKey,
   AutoIncrement,
+  ForeignKey,
 } from "sequelize-typescript";
-import { couldStartTrivia } from "typescript";
+import { Package } from "./package.model";
+import { Userinfo } from "./userinfo.model";
+
 @Table({
-  tableName: "packages",
+  tableName: "bookings",
   timestamps: false,
 })
-export class Package extends Model<Package> {
+export class Booking extends Model<Booking> {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
@@ -22,23 +24,23 @@ export class Package extends Model<Package> {
   @Column(DataType.STRING)
   title!: string;
 
+  @Column(DataType.STRING)
+  first_name!: string;
+
+  @Column(DataType.STRING)
+  last_name!: string;
+
+  @Column(DataType.STRING)
+  email!: string;
+
+  @Column(DataType.STRING)
+  mobile_number!: string;
+
+  @Column(DataType.STRING)
+  gender!: string;
+
   @Column(DataType.DATE)
-  start_date!: Date;
-
-  @Column(DataType.STRING)
-  file_name!: string;
-
-  @Column(DataType.STRING)
-  description!: string;
-
-  @Column(DataType.STRING)
-  price!: string;
-
-  @Column(DataType.INTEGER)
-  no_of_person!: number;
-
-  @Column(DataType.STRING)
-  days_and_night!: string;
+  date_of_birth!: Date;
 
   @Column(DataType.STRING)
   country!: string;
@@ -47,13 +49,24 @@ export class Package extends Model<Package> {
   state!: string;
 
   @Column(DataType.STRING)
-  superior_twin_price!: string;
+  address_1!: string;
 
   @Column(DataType.STRING)
-  booking_fees!: string;
+  address_2!: string;
+
+  @ForeignKey(() => Package)
+  @Column(DataType.INTEGER)
+  package_id!: number;
+
+  @ForeignKey(() => Userinfo)
+  @Column(DataType.INTEGER)
+  user_id!: number;
 
   @Column(DataType.TINYINT)
-  published!: number;
+  terms_and_conditions!: number;
+
+  @Column(DataType.INTEGER)
+  total_persons!: number;
 
   @Column(DataType.STRING)
   created_by!: string;

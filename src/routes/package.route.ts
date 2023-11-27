@@ -108,7 +108,7 @@ packageRouter.delete("/:id", verify, deletePackage);
 packageRouter.post(
   "/upload/:id",
   upload.single("file"),
-  uploadImageByPackageId
+  uploadImageByPackageId,
 );
 
 export default packageRouter;

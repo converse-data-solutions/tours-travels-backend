@@ -13,7 +13,7 @@ import { Role } from "./role.model";
 
 @Table({
   timestamps: false,
-  tableName:"users"
+  tableName: "users",
 })
 export class Userinfo extends Model {
   @PrimaryKey
@@ -31,7 +31,7 @@ export class Userinfo extends Model {
   @Column(DataType.STRING)
   mobile_number!: string;
 
-  @ForeignKey(() => Role) 
+  @ForeignKey(() => Role)
   @Column(DataType.INTEGER)
   role_id!: number;
 
@@ -56,7 +56,6 @@ export class Userinfo extends Model {
   @Default(true)
   @Column(DataType.BOOLEAN)
   user_status!: boolean;
-
 
   @Column(DataType.STRING)
   file_name!: string;

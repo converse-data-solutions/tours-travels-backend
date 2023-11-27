@@ -3,11 +3,12 @@ import connection from "./src/config/db.config";
 import { json, urlencoded } from "body-parser";
 import userRouter from "./src/routes/user.route";
 import packageRouter from "./src/routes/package.route";
+import bookingRouter from "./src/routes/booking.route";
 import cors from "cors";
 const app = express();
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 
-const allowedOrigins ="*";
+const allowedOrigins = "*";
 
 const options: cors.CorsOptions = {
   origin: allowedOrigins,
@@ -23,14 +24,15 @@ app.use(
     err: Error,
     req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    next: express.NextFunction,
   ) => {
     console.log(req.body);
     res.status(500).json({ message: err.message });
-  }
+  },
 );
 app.use("/user", userRouter);
-app.use("/package",packageRouter)
+app.use("/package", packageRouter);
+app.use("/booking", bookingRouter);
 
 connection
   .sync()
