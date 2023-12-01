@@ -67,6 +67,9 @@ export class Userinfo extends Model {
   default_language!: string;
 
   @Column(DataType.STRING)
+  role_name!:string;
+
+  @Column(DataType.STRING)
   created_by!: string;
 
   @Column(DataType.DATE)
