@@ -7,6 +7,9 @@ import {
   getAllPackage,
   getPackageById,
   uploadImageByPackageId,
+  countryList,
+  allPackageByDate,
+  searchPackages,
 } from "../controller/package.controller";
 import { verify } from "../controller/user.controller";
 import multer from "multer";
@@ -25,6 +28,12 @@ export const storage = multer.diskStorage({
 
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
+packageRouter.get("/country/filter", verify, countryList);
+
+packageRouter.get("/list/bydate", verify, allPackageByDate);
+
+packageRouter.post("/packagedetails/getbyuser", verify, searchPackages);
+
 /**
  * @swagger
  * /user:
@@ -36,6 +45,7 @@ const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
  *         description: Successful response
  */
 packageRouter.post("/create", createPackage);
+
 /**
  * @swagger
  * /user:
@@ -67,6 +77,7 @@ packageRouter.get("/get", verify, getAllPackage);
  */
 
 packageRouter.get("/:id", verify, getPackageById);
+
 /**
  * @swagger
  * /package/{id}:
@@ -74,6 +85,7 @@ packageRouter.get("/:id", verify, getPackageById);
  *     summary: Update a package
  *     description: Update a package by its ID.
  *     parameters:
+ *
  *       - in: path
  *         name: id
  *         description: ID of the package to update
@@ -86,6 +98,7 @@ packageRouter.get("/:id", verify, getPackageById);
  *         description: Successful response
  */
 packageRouter.put("/:id", verify, updatePackage);
+
 /**
  * @swagger
  * /user/{id}:
@@ -105,6 +118,16 @@ packageRouter.put("/:id", verify, updatePackage);
  *         description: Successful response
  */
 packageRouter.delete("/:id", verify, deletePackage);
+
+/**
+ * @swagger
+ * /country:
+ *
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ */
+
 packageRouter.post(
   "/upload/:id",
   upload.single("file"),

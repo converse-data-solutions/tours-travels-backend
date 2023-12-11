@@ -36,7 +36,7 @@ export class Userinfo extends Model {
   role_id!: number;
 
   @Column(DataType.STRING)
-  role_name!:string;
+  role_name!: string;
 
   @Column(DataType.STRING)
   first_name!: string;
