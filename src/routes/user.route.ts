@@ -9,6 +9,7 @@ import {
   updateUser,
   uploadImageUserid,
   SignInUser,
+  getAgentDetails,
 } from "../controller/user.controller";
 import multer from "multer";
 
@@ -37,6 +38,8 @@ const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
  *         description: Successful response
  */
 userRouter.post("/create", createUser);
+
+userRouter.get("/agent/details", verify, getAgentDetails);
 
 /**
  * @swagger

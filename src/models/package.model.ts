@@ -50,6 +50,9 @@ export class Package extends Model<Package> {
   superior_twin_price!: string;
 
   @Column(DataType.STRING)
+  offer!: string;
+
+  @Column(DataType.STRING)
   booking_fees!: string;
 
   @Column(DataType.TINYINT)

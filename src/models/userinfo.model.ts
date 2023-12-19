@@ -8,6 +8,7 @@ import {
   Unique,
   Default,
   ForeignKey,
+  BelongsTo,
 } from "sequelize-typescript";
 import { Role } from "./role.model";
 
@@ -35,8 +36,10 @@ export class Userinfo extends Model {
   @Column(DataType.INTEGER)
   role_id!: number;
 
-  @Column(DataType.STRING)
-  role_name!: string;
+  // @Column(DataType.STRING)
+  // role_name!: string;
+  @BelongsTo(() => Role)
+  role_name!: Role;
 
   @Column(DataType.STRING)
   first_name!: string;
@@ -68,6 +71,9 @@ export class Userinfo extends Model {
 
   @Column(DataType.STRING)
   default_language!: string;
+
+  @Column(DataType.STRING)
+  agent_position!: string;
 
   @Column(DataType.STRING)
   created_by!: string;

@@ -10,6 +10,7 @@ import {
   countryList,
   allPackageByDate,
   searchPackages,
+  getAllPackageByOffer,
 } from "../controller/package.controller";
 import { verify } from "../controller/user.controller";
 import multer from "multer";
@@ -33,6 +34,8 @@ packageRouter.get("/country/filter", verify, countryList);
 packageRouter.get("/list/bydate", verify, allPackageByDate);
 
 packageRouter.post("/packagedetails/getbyuser", verify, searchPackages);
+
+packageRouter.get("/packagedetails/byoffer", getAllPackageByOffer);
 
 /**
  * @swagger
