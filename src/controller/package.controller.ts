@@ -363,3 +363,54 @@ export const searchPackages: RequestHandler = async (req, res, next) => {
     });
   }
 };
+
+export const getAllPackageByOffer: RequestHandler = async (req, res, next) => {
+  try {
+    const allPackageinfo: Package[] = await Package.findAll({
+      where: {
+        published: 1,
+        offer: {
+          [Op.ne]: "No Offer",
+        },
+      },
+    });
+
+    for (const packageInfo of allPackageinfo) {
+      const filePath = `../../PackageUploads/${packageInfo?.file_name}`;
+
+      if (fs.existsSync(filePath)) {
+        const fileBuffer = fs.readFileSync(filePath);
+        const dataURL = `data:image/jpeg;base64,${fileBuffer.toString(
+          "base64",
+        )}`;
+        packageInfo.file_name = dataURL;
+      }
+    }
+
+    const responseData = allPackageinfo.map((packageInfo) => {
+      if (packageInfo.file_name !== null) {
+        return {
+          ...packageInfo.toJSON(),
+          file_name: packageInfo.file_name,
+        };
+      } else {
+        const { file_name, ...packageDetailsWithoutFile } =
+          packageInfo.toJSON();
+        return {
+          ...packageDetailsWithoutFile,
+          customProperty: "No Image Available",
+        };
+      }
+    });
+
+    return res.status(200).json({
+      isSuccess: true,
+      message: "Package fetched successfully",
+      data: responseData,
+    });
+  } catch (ex: any) {
+    return res
+      .status(400)
+      .json({ isSuccess: false, message: "", data: ex.errors });
+  }
+};

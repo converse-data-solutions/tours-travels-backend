@@ -6,7 +6,9 @@ import {
   Default,
   PrimaryKey,
   AutoIncrement,
+  HasMany,
 } from "sequelize-typescript";
+import { Userinfo } from "./userinfo.model";
 
 @Table({
   tableName: "roles",
@@ -33,4 +35,7 @@ export class Role extends Model<Role> {
 
   @Column(DataType.DATE)
   updated_at!: Date;
+
+  @HasMany(() => Userinfo)
+  users!: Userinfo[];
 }

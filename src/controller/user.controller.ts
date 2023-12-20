@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import fs from "fs-extra";
 import { Userinfo } from "../models/userinfo.model";
+import { Role } from "../models/role.model";
 const jwt = require("jsonwebtoken");
 
 const SecureKey = "converse@123";
@@ -66,7 +67,14 @@ export const deleteUser: RequestHandler = async (req, res, next) => {
 
 export const getAllUser: RequestHandler = async (req, res, next) => {
   try {
-    const allUserinfo: Userinfo[] = await Userinfo.findAll();
+    const allUserinfo: Userinfo[] = await Userinfo.findAll({
+      include: [
+        {
+          model: Role,
+          attributes: ["role_name"],
+        },
+      ],
+    });
 
     const usersWithImages: any[] = [];
 
@@ -83,16 +91,22 @@ export const getAllUser: RequestHandler = async (req, res, next) => {
 
       usersWithImages.push(userinfo);
     }
-
     const responseData = usersWithImages.map((user) => {
-      if (user.file_name !== null) {
+      const userJSON = user.toJSON();
+      const role_name = userJSON.role?.role_name || null;
+
+      if (userJSON.file_name !== null) {
         return {
-          ...user.toJSON(),
-          file_name: user.file_name,
+          ...userJSON,
+          role_name: userJSON.role_name?.role_name,
+          file_name: userJSON.file_name,
         };
       } else {
-        const { file_name, ...userDetailsWithoutFile } = user.toJSON();
-        return userDetailsWithoutFile;
+        const { file_name, ...userDetailsWithoutFile } = userJSON;
+        return {
+          ...userDetailsWithoutFile,
+          role_name: userDetailsWithoutFile.role_name?.role_name,
+        };
       }
     });
 
@@ -110,7 +124,14 @@ export const getAllUser: RequestHandler = async (req, res, next) => {
 
 export const getUserById: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
-  const userinfo = await Userinfo.findByPk(id);
+  const userinfo = await Userinfo.findByPk(id, {
+    include: [
+      {
+        model: Role,
+        attributes: ["role_name"],
+      },
+    ],
+  });
 
   if (!userinfo) {
     return res.status(404).json({ error: "User not found" });
@@ -121,6 +142,7 @@ export const getUserById: RequestHandler = async (req, res, next) => {
     message: "User fetched successfully",
     data: {
       ...userinfo.toJSON(),
+      role_name: userinfo.role_name?.role_name || null,
       ...(userinfo.file_name ? { file_name: getFileDataURL(filePath) } : {}),
     },
   };
@@ -193,6 +215,12 @@ export const SignInUser: RequestHandler = async (req, res, next) => {
       where: {
         email: email,
       },
+      include: [
+        {
+          model: Role,
+          attributes: ["role_name"],
+        },
+      ],
     });
     if (!Signin) {
       return res.status(404).json({ error: "User not found" });
@@ -215,7 +243,10 @@ export const SignInUser: RequestHandler = async (req, res, next) => {
 
       return res.status(200).json({
         message: "User signed in successfully",
-        data: Signin,
+        data: {
+          ...Signin.toJSON(),
+          role_name: Signin.role_name?.role_name || null,
+        },
         accessToken: accesstoken,
         refreshToken: refreshToken,
       });
@@ -224,5 +255,48 @@ export const SignInUser: RequestHandler = async (req, res, next) => {
     }
   } catch (error) {
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getAgentDetails: RequestHandler = async (req, res, next) => {
+  try {
+    const agentDetails = await Userinfo.findAll({
+      include: [
+        {
+          model: Role,
+          attributes: ["role_name"],
+        },
+      ],
+      attributes: [
+        "id",
+        "file_name",
+        "role_id",
+        "agent_position",
+        "first_name",
+      ],
+      where: {
+        role_id: 3,
+      },
+    });
+
+    const responseData = agentDetails.map((agent) => ({
+      id: agent.id,
+      file_name: agent.file_name,
+      role_id: agent.role_id,
+      first_name: agent.first_name,
+      agent_position: agent.agent_position || null,
+    }));
+
+    return res.status(200).json({
+      isSuccess: true,
+      message: "Agent details fetched successfully",
+      data: responseData,
+    });
+  } catch (ex: any) {
+    return res.status(400).json({
+      isSuccess: false,
+      message: "Error fetching agent details",
+      data: ex.errors,
+    });
   }
 };
