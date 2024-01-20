@@ -32,7 +32,6 @@ export const verify = (req: any, res: any, next: any) => {
 export const createUser: RequestHandler = async (req, res, next) => {
   try {
     var todos = await Userinfo.create({ ...req.body });
-     console.log(req.body)
     return res.status(200).json({
       isSuccess: true,
       message: "User created successfully",
