@@ -33,6 +33,7 @@ export class Userinfo extends Model {
   mobile_number!: string;
 
   @ForeignKey(() => Role)
+  @Default(2)
   @Column(DataType.INTEGER)
   role_id!: number;
 
@@ -78,12 +79,15 @@ export class Userinfo extends Model {
   @Column(DataType.STRING)
   created_by!: string;
 
-  @Column(DataType.DATE)
+  @Default(DataType.NOW)
+  @Column({ type: DataType.DATE, defaultValue: DataType.NOW })
   created_at!: Date;
 
   @Column(DataType.STRING)
   updated_by!: string;
 
-  @Column(DataType.DATE)
+
+  @Default(DataType.NOW)
+  @Column({ type: DataType.DATE, defaultValue: DataType.NOW })
   updated_at!: Date;
 }

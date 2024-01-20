@@ -11,6 +11,10 @@ import {
   allPackageByDate,
   searchPackages,
   getAllPackageByOffer,
+  filterByDays,
+  filterByCategories,
+  filterByDurationType
+  
 } from "../controller/package.controller";
 import { verify } from "../controller/user.controller";
 import multer from "multer";
@@ -59,7 +63,7 @@ packageRouter.post("/create", createPackage);
  *       '200':
  *         description: Successful response
  */
-packageRouter.get("/get", verify, getAllPackage);
+packageRouter.get("/get", getAllPackage);
 /**
  * @swagger
  * /package/{id}:
@@ -79,7 +83,7 @@ packageRouter.get("/get", verify, getAllPackage);
  *         description: Successful response
  */
 
-packageRouter.get("/:id", verify, getPackageById);
+packageRouter.get("/:id", getPackageById);
 
 /**
  * @swagger
@@ -137,4 +141,12 @@ packageRouter.post(
   uploadImageByPackageId,
 );
 
-export default packageRouter;
+
+
+  packageRouter.get("/filter/:country",filterByDays);
+
+  packageRouter.get('/groupbycategory/details',filterByCategories);
+
+  packageRouter.get("/groupbyduration/details",filterByDurationType)
+
+ export default packageRouter;
