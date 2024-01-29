@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import fs from "fs-extra";
 import { Package } from "../models/package.model";
 import { Op } from "sequelize";
+import sequelize from "sequelize";
 
 export const createPackage: RequestHandler = async (req, res, next) => {
   try {
@@ -24,7 +25,7 @@ export const createPackage: RequestHandler = async (req, res, next) => {
 export const uploadImageByPackageId: RequestHandler = async (
   req,
   res,
-  next,
+  next
 ) => {
   try {
     const { id } = req.params;
@@ -32,7 +33,7 @@ export const uploadImageByPackageId: RequestHandler = async (
 
     const [updatedRowCount, updatedPackage] = await Package.update(
       { file_name },
-      { where: { id: id }, returning: true },
+      { where: { id: id }, returning: true }
     );
 
     if (updatedRowCount === 0) {
@@ -87,7 +88,7 @@ export const getAllPackage: RequestHandler = async (req, res, next) => {
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
         const dataURL = `data:image/jpeg;base64,${fileBuffer.toString(
-          "base64",
+          "base64"
         )}`;
         packageInfo.file_name = dataURL;
       }
@@ -172,7 +173,7 @@ export const updatePackage: RequestHandler = async (req, res, next) => {
 export const countryList: RequestHandler = async (
   req: any,
   res: any,
-  next: any,
+  next: any
 ) => {
   try {
     const { country: selectedCountry } = req.query;
@@ -186,7 +187,7 @@ export const countryList: RequestHandler = async (
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
         const dataURL = `data:image/jpeg;base64,${fileBuffer.toString(
-          "base64",
+          "base64"
         )}`;
         packageInfo.file_name = dataURL;
       }
@@ -239,16 +240,16 @@ export const countryList: RequestHandler = async (
         };
         return acc;
       },
-      {},
+      {}
     );
 
     const sortedUniqueCountries = Object.keys(uniqueCountries).sort(
-      (a, b) => uniqueCountries[b].count - uniqueCountries[a].count,
+      (a, b) => uniqueCountries[b].count - uniqueCountries[a].count
     );
 
     const filteredResponseData = selectedCountry
       ? responseData.filter(
-          (packageInfo) => packageInfo.country === selectedCountry,
+          (packageInfo) => packageInfo.country === selectedCountry
         )
       : responseData;
 
@@ -381,7 +382,8 @@ export const getAllPackageByOffer: RequestHandler = async (req, res, next) => {
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
         const dataURL = `data:image/jpeg;base64,${fileBuffer.toString(
-          "base64",
+          "base64"
+
         )}`;
         packageInfo.file_name = dataURL;
       }
@@ -414,3 +416,223 @@ export const getAllPackageByOffer: RequestHandler = async (req, res, next) => {
       .json({ isSuccess: false, message: "", data: ex.errors });
   }
 };
+
+
+
+export const filterByDays: RequestHandler = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  try {
+    const { country }: { country: string } = req.params;
+    const {
+      category,
+      days_and_night,
+      price
+    }: { category?: string; days_and_night?: string ;price?:string} = req.query;
+
+    const whereClause: any = { country };
+
+    if (category) {
+      whereClause.category = category;
+    }
+
+    const allPackages: Package[] = await Package.findAll({
+      where: whereClause,
+    });
+
+    if (price) {
+      let filteredPackages = allPackages;
+
+      if (price && /^\d+-\d+$/.test(price)) {
+        const [startPrice, endPrice] = price.split("-").map(Number);
+
+        if (!isNaN(startPrice) && !isNaN(endPrice)) {
+          filteredPackages = filteredPackages.filter((packageInfo: any) => {
+            const packagePrice = parseInt(packageInfo.price, 10); 
+
+            return packagePrice >= startPrice && packagePrice <= endPrice;
+          });
+
+          if (filteredPackages.length === 0) {
+            return res.status(200).json({
+              isSuccess: true,
+              message: "No packages found for the specified price range.",
+              data: filteredPackages,
+            });
+          }
+        } else {
+          return res.status(400).json({
+            isSuccess: false,
+            message: "Invalid price range values. Both startPrice and endPrice should be numbers.",
+            data: null,
+          });
+        }
+      } else {
+        return res.status(400).json({
+          isSuccess: false,
+          message: "Invalid or missing price parameter in the URL.",
+          data: null,
+        });
+      }
+
+      return res.status(200).json({
+        isSuccess: true,
+        message: "Packages filtered successfully",
+        data: filteredPackages,
+      });
+    }
+
+
+    if (days_and_night) {
+      let filteredPackages = allPackages;
+
+      if (days_and_night && /^\d+-\d+(,\d+-\d+)*$/.test(days_and_night)) {
+        const ranges = days_and_night.split(',').map(range => {
+          const [startRange, endRange] = range.split("-").map(Number);
+          return { startRange, endRange };
+        });
+
+        if (ranges.every(({ startRange, endRange }) => !isNaN(startRange) && !isNaN(endRange))) {
+          filteredPackages = filteredPackages.filter((packageInfo: any) => {
+            const packageValue = parseInt(packageInfo.days_and_night, 10);
+
+            return ranges.some(({ startRange, endRange }) => packageValue >= startRange && packageValue <= endRange);
+          });
+
+          if (filteredPackages.length === 0) {
+            return res.status(200).json({
+              isSuccess: true,
+              message: "No packages found for the specified days_and_night ranges.",
+              data: filteredPackages,
+            });
+          }
+        } else {
+          return res.status(400).json({
+            isSuccess: false,
+            message: "Invalid range values. Both startRange and endRange should be numbers.",
+            data: null,
+          });
+        }
+      } else {
+        return res.status(400).json({
+          isSuccess: false,
+          message: "Invalid or missing days_and_night parameter in the URL.",
+          data: null,
+        });
+      }
+
+      return res.status(200).json({
+        isSuccess: true,
+        message: "Packages filtered successfully",
+        data: filteredPackages,
+      });
+    }
+
+  return res.status(200).json({
+           isSuccess: true,
+          message: "Packages filtered successfully",
+          data: allPackages,
+  });
+
+  } catch (ex: any) {
+    return res.status(500).json({
+      isSuccess: false,
+      message: "Internal server error",
+      data: null,
+    });
+  }
+};
+
+export const filterByCategories: RequestHandler = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  try {
+    const groupedPackages = await Package.findAll({
+      attributes: [
+        "category",
+        [sequelize.fn("COUNT", sequelize.col("category")), "count"],
+      ],
+      group: ["category"],
+    });
+
+    return res.status(200).json({
+      isSuccess: true,
+      message: "Packages grouped by category successfully",
+      data: groupedPackages,
+    });
+  } catch (ex) {
+    return res.status(500).json({
+      isSuccess: false,
+      message: "Internal server error",
+      data: null,
+    });
+  }
+};
+
+export const filterByDurationType: RequestHandler = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  try {
+    const groupedPackages = await Package.findAll({
+      attributes: [
+        "days_and_night",
+        [sequelize.fn("COUNT", sequelize.col("days_and_night")), "count"],
+      ],
+      group: ["days_and_night"],
+      order: [["days_and_night", "ASC"]],
+    });
+
+    const result: { duration: any; count: number }[] = [];
+
+    groupedPackages.forEach((group: any) => {
+      const days = group.getDataValue("days_and_night");
+      let duration: any;
+
+      if (days >= 1 && days <= 10) {
+        duration = "1-10 days";
+      } else if (days >= 11 && days <= 20) {
+        duration = "11-20 days";
+      } else if (days >= 21 && days <= 30) {
+        duration = "21-30 days";
+      } else if (days >= 31 && days <= 40) {
+        duration = "31-40 days";
+      } else if (days >= 41 && days <= 50) {
+        duration = "41-50 days";
+      } else {
+        duration = "Unknown";
+      }
+
+      const existingCategoryIndex = result.findIndex(
+        (item) => item.duration === duration
+      );
+
+      if (existingCategoryIndex !== -1) {
+        result[existingCategoryIndex].count += group.getDataValue("count");
+      } else {
+        result.push({
+          duration,
+          count: group.getDataValue("count"),
+        });
+      }
+    });
+
+    return res.status(200).json({
+      isSuccess: true,
+      message: "Packages grouped by category successfully",
+      data: result,
+    });
+  } catch (ex) {
+    return res.status(500).json({
+      isSuccess: false,
+      message: "Internal server error",
+      data: null,
+    });
+  }
+};
+
