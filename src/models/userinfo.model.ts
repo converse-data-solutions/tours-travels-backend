@@ -37,7 +37,6 @@ export class Userinfo extends Model {
   @Column(DataType.INTEGER)
   role_id!: number;
 
-
   @BelongsTo(() => Role)
   role_name!: Role;
 
