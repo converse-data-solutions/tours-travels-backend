@@ -1,4 +1,3 @@
-import { TinyIntegerDataType } from "sequelize";
 import {
   Table,
   Model,
@@ -8,7 +7,6 @@ import {
   PrimaryKey,
   AutoIncrement,
 } from "sequelize-typescript";
-import { couldStartTrivia } from "typescript";
 @Table({
   tableName: "packages",
   timestamps: false,
@@ -71,6 +69,7 @@ export class Package extends Model<Package> {
   @Column(DataType.STRING)
   updated_by!: string;
 
+ @Default(DataType.NOW)
   @Column(DataType.DATE)
   updated_at!: Date;
 }
