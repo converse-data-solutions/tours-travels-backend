@@ -9,7 +9,6 @@ import sequelize from "sequelize";
 export const createPackage: RequestHandler = async (req, res, next) => {
   try {
     var packageList = await Package.create({ ...req.body });
-    console.log(req.body)
 
     return res.status(200).json({
       isSuccess: true,
@@ -17,7 +16,6 @@ export const createPackage: RequestHandler = async (req, res, next) => {
       data: packageList,
     });
   } catch (ex: any) {
-    console.log(ex.error)
     return res.status(400).json({
       isSuccess: false,
       message: "package not created ",
