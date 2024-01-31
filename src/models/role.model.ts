@@ -15,6 +15,7 @@ import { Userinfo } from "./userinfo.model";
   timestamps: false,
 })
 export class Role extends Model<Role> {
+  
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)
