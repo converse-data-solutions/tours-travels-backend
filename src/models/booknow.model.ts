@@ -79,6 +79,7 @@ export class Booking extends Model<Booking> {
   @Column(DataType.STRING)
   updated_by!: string;
 
+
   @Default(DataType.NOW)
   @Column(DataType.DATE)
   updated_at!: Date;

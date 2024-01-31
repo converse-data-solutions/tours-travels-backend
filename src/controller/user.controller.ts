@@ -39,7 +39,7 @@ export const createUser: RequestHandler = async (req, res, next) => {
       data: todos,
     });
   } catch (ex: any) {
-    
+
     return res.status(400).json({
       isSuccess: false,
       message: "User not created ",
