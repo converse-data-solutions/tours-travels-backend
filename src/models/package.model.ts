@@ -51,8 +51,7 @@ export class Package extends Model<Package> {
   category!:string;
 
   @Column(DataType.STRING)
-  offer!: string;
-
+   offer!: string;
 
   @Column(DataType.STRING)
   booking_fees!: string;

@@ -62,7 +62,6 @@ export class Booking extends Model<Booking> {
   @Column(DataType.INTEGER)
   user_id!: number;
 
-  @Default(0)
   @Column(DataType.TINYINT)
   terms_and_conditions!: number;
 
@@ -79,8 +78,6 @@ export class Booking extends Model<Booking> {
   @Column(DataType.STRING)
   updated_by!: string;
 
-
-  @Default(DataType.NOW)
   @Column(DataType.DATE)
   updated_at!: Date;
 }
