@@ -383,6 +383,7 @@ export const getAllPackageByOffer: RequestHandler = async (req, res, next) => {
         const fileBuffer = fs.readFileSync(filePath);
         const dataURL = `data:image/jpeg;base64,${fileBuffer.toString(
           "base64"
+
         )}`;
         packageInfo.file_name = dataURL;
       }
@@ -415,6 +416,7 @@ export const getAllPackageByOffer: RequestHandler = async (req, res, next) => {
       .json({ isSuccess: false, message: "", data: ex.errors });
   }
 };
+
 
 
 export const filterByDays: RequestHandler = async (
@@ -633,3 +635,4 @@ export const filterByDurationType: RequestHandler = async (
     });
   }
 };
+

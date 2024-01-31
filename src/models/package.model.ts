@@ -53,6 +53,7 @@ export class Package extends Model<Package> {
   @Column(DataType.STRING)
   offer!: string;
 
+
   @Column(DataType.STRING)
   booking_fees!: string;
 
@@ -69,7 +70,7 @@ export class Package extends Model<Package> {
   @Column(DataType.STRING)
   updated_by!: string;
 
- @Default(DataType.NOW)
+  @Default(DataType.NOW)
   @Column(DataType.DATE)
   updated_at!: Date;
 }
