@@ -73,6 +73,8 @@ export const exportToCSV = async (
 
     await csvWriter.writeRecords(csvData);
 
+console.log("Final CSV Data:", csvData);
+
     const csvFilePath = `${__dirname}/exported-data.csv`;
 
     res.setHeader("Content-Type", "text/csv");
@@ -80,6 +82,7 @@ export const exportToCSV = async (
       "Content-Disposition",
       "attachment; filename=exported-data.csv",
     );
+
 
     const stream = fs.createReadStream(csvFilePath);
     stream.pipe(res);
