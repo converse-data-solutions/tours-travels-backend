@@ -31,21 +31,8 @@ export const storage = multer.diskStorage({
   },
 });
 
-// export const csvStorage=multer.diskStorage({
-//   destination:(req,file,cb)=>{
-//     cb(null,'FileUploads/');
-//   },
 
-// filename: (req, file, cb) => {
-//   const fileName = `${Date.now()}-${file.originalname}`;
-//   cb(null, fileName);
-// },
 
-// })
-
-// const csvStorage=multer({  });
-
-const uploadCsv = multer({ dest: "FileUploads/" });
 
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
