@@ -78,7 +78,6 @@ export const exportToExcel = async (
     await workbook.xlsx.writeFile(excelFilePath);
     console.log("Final Excel Data:", allPackageinfo);
 
-
     res.setHeader(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
