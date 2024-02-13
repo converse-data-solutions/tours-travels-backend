@@ -49,8 +49,8 @@ export class Userinfo extends Model {
   @Column(DataType.STRING)
   country!: string;
 
-  @Column(DataType.ENUM("Male", "Female", "Transgender"))
-  gender!: "Male" | "Female" | "Transgender";
+  @Column(DataType.ENUM("Male", "Female", "Other"))
+  gender!: "Male" | "Female" | "Other";
 
   @Column(DataType.TEXT)
   address!: string;
@@ -83,7 +83,6 @@ export class Userinfo extends Model {
 
   @Column(DataType.STRING)
   updated_by!: string;
-
 
   @Default(DataType.NOW)
   @Column({ type: DataType.DATE, defaultValue: DataType.NOW })

@@ -3,6 +3,11 @@ import fs from "fs-extra";
 import { Package } from "../models/package.model";
 import { Op } from "sequelize";
 import sequelize from "sequelize";
+import csvParser from "csv-parser";
+import { Readable } from "stream";
+import moment from "moment";
+
+// const csv = require('csv-parser')
 
 export const createPackage: RequestHandler = async (req, res, next) => {
   try {
@@ -25,7 +30,7 @@ export const createPackage: RequestHandler = async (req, res, next) => {
 export const uploadImageByPackageId: RequestHandler = async (
   req,
   res,
-  next
+  next,
 ) => {
   try {
     const { id } = req.params;
@@ -33,7 +38,7 @@ export const uploadImageByPackageId: RequestHandler = async (
 
     const [updatedRowCount, updatedPackage] = await Package.update(
       { file_name },
-      { where: { id: id }, returning: true }
+      { where: { id: id }, returning: true },
     );
 
     if (updatedRowCount === 0) {
@@ -88,7 +93,7 @@ export const getAllPackage: RequestHandler = async (req, res, next) => {
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
         const dataURL = `data:image/jpeg;base64,${fileBuffer.toString(
-          "base64"
+          "base64",
         )}`;
         packageInfo.file_name = dataURL;
       }
@@ -173,7 +178,7 @@ export const updatePackage: RequestHandler = async (req, res, next) => {
 export const countryList: RequestHandler = async (
   req: any,
   res: any,
-  next: any
+  next: any,
 ) => {
   try {
     const { country: selectedCountry } = req.query;
@@ -187,7 +192,7 @@ export const countryList: RequestHandler = async (
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
         const dataURL = `data:image/jpeg;base64,${fileBuffer.toString(
-          "base64"
+          "base64",
         )}`;
         packageInfo.file_name = dataURL;
       }
@@ -240,16 +245,16 @@ export const countryList: RequestHandler = async (
         };
         return acc;
       },
-      {}
+      {},
     );
 
     const sortedUniqueCountries = Object.keys(uniqueCountries).sort(
-      (a, b) => uniqueCountries[b].count - uniqueCountries[a].count
+      (a, b) => uniqueCountries[b].count - uniqueCountries[a].count,
     );
 
     const filteredResponseData = selectedCountry
       ? responseData.filter(
-          (packageInfo) => packageInfo.country === selectedCountry
+          (packageInfo) => packageInfo.country === selectedCountry,
         )
       : responseData;
 
@@ -382,8 +387,7 @@ export const getAllPackageByOffer: RequestHandler = async (req, res, next) => {
       if (fs.existsSync(filePath)) {
         const fileBuffer = fs.readFileSync(filePath);
         const dataURL = `data:image/jpeg;base64,${fileBuffer.toString(
-          "base64"
-
+          "base64",
         )}`;
         packageInfo.file_name = dataURL;
       }
@@ -417,20 +421,19 @@ export const getAllPackageByOffer: RequestHandler = async (req, res, next) => {
   }
 };
 
-
-
 export const filterByDays: RequestHandler = async (
   req: any,
   res: any,
-  next: any
+  next: any,
 ) => {
   try {
     const { country }: { country: string } = req.params;
     const {
       category,
       days_and_night,
-      price
-    }: { category?: string; days_and_night?: string ;price?:string} = req.query;
+      price,
+    }: { category?: string; days_and_night?: string; price?: string } =
+      req.query;
 
     const whereClause: any = { country };
 
@@ -450,7 +453,7 @@ export const filterByDays: RequestHandler = async (
 
         if (!isNaN(startPrice) && !isNaN(endPrice)) {
           filteredPackages = filteredPackages.filter((packageInfo: any) => {
-            const packagePrice = parseInt(packageInfo.price, 10); 
+            const packagePrice = parseInt(packageInfo.price, 10);
 
             return packagePrice >= startPrice && packagePrice <= endPrice;
           });
@@ -465,7 +468,8 @@ export const filterByDays: RequestHandler = async (
         } else {
           return res.status(400).json({
             isSuccess: false,
-            message: "Invalid price range values. Both startPrice and endPrice should be numbers.",
+            message:
+              "Invalid price range values. Both startPrice and endPrice should be numbers.",
             data: null,
           });
         }
@@ -484,34 +488,43 @@ export const filterByDays: RequestHandler = async (
       });
     }
 
-
     if (days_and_night) {
       let filteredPackages = allPackages;
 
       if (days_and_night && /^\d+-\d+(,\d+-\d+)*$/.test(days_and_night)) {
-        const ranges = days_and_night.split(',').map(range => {
+        const ranges = days_and_night.split(",").map((range) => {
           const [startRange, endRange] = range.split("-").map(Number);
           return { startRange, endRange };
         });
 
-        if (ranges.every(({ startRange, endRange }) => !isNaN(startRange) && !isNaN(endRange))) {
+        if (
+          ranges.every(
+            ({ startRange, endRange }) =>
+              !isNaN(startRange) && !isNaN(endRange),
+          )
+        ) {
           filteredPackages = filteredPackages.filter((packageInfo: any) => {
             const packageValue = parseInt(packageInfo.days_and_night, 10);
 
-            return ranges.some(({ startRange, endRange }) => packageValue >= startRange && packageValue <= endRange);
+            return ranges.some(
+              ({ startRange, endRange }) =>
+                packageValue >= startRange && packageValue <= endRange,
+            );
           });
 
           if (filteredPackages.length === 0) {
             return res.status(200).json({
               isSuccess: true,
-              message: "No packages found for the specified days_and_night ranges.",
+              message:
+                "No packages found for the specified days_and_night ranges.",
               data: filteredPackages,
             });
           }
         } else {
           return res.status(400).json({
             isSuccess: false,
-            message: "Invalid range values. Both startRange and endRange should be numbers.",
+            message:
+              "Invalid range values. Both startRange and endRange should be numbers.",
             data: null,
           });
         }
@@ -530,12 +543,11 @@ export const filterByDays: RequestHandler = async (
       });
     }
 
-  return res.status(200).json({
-           isSuccess: true,
-          message: "Packages filtered successfully",
-          data: allPackages,
-  });
-
+    return res.status(200).json({
+      isSuccess: true,
+      message: "Packages filtered successfully",
+      data: allPackages,
+    });
   } catch (ex: any) {
     return res.status(500).json({
       isSuccess: false,
@@ -548,7 +560,7 @@ export const filterByDays: RequestHandler = async (
 export const filterByCategories: RequestHandler = async (
   req: any,
   res: any,
-  next: any
+  next: any,
 ) => {
   try {
     const groupedPackages = await Package.findAll({
@@ -576,7 +588,7 @@ export const filterByCategories: RequestHandler = async (
 export const filterByDurationType: RequestHandler = async (
   req: any,
   res: any,
-  next: any
+  next: any,
 ) => {
   try {
     const groupedPackages = await Package.findAll({
@@ -609,7 +621,7 @@ export const filterByDurationType: RequestHandler = async (
       }
 
       const existingCategoryIndex = result.findIndex(
-        (item) => item.duration === duration
+        (item) => item.duration === duration,
       );
 
       if (existingCategoryIndex !== -1) {
@@ -631,6 +643,101 @@ export const filterByDurationType: RequestHandler = async (
     return res.status(500).json({
       isSuccess: false,
       message: "Internal server error",
+      data: null,
+    });
+  }
+};
+
+export const createPackageByCsv: RequestHandler = async (req, res, next) => {
+  try {
+    console.log(req.body);
+
+    const packages: any[] = [];
+    const existingPackages: any[] = [];
+
+    const fieldPart: any = {
+      ID: "id",
+      Title: "title",
+      "Start Date": "start_date",
+      "File Name": "file_name",
+      Description: "description",
+      "No. of Person": "no_of_person",
+      "Days & Night": "days_and_night",
+      Country: "country",
+      State: "state",
+      Price: "price",
+      Published: "published",
+      Offer: "offer",
+      Category: "category",
+    };
+
+    const csvData = req.body;
+
+    for (const row of csvData) {
+      const packageData: any = {};
+
+      const unexpectedFields = Object.keys(row).filter(
+        (csvColumn) => !fieldPart.hasOwnProperty(csvColumn),
+      );
+
+      if (unexpectedFields.length > 0) {
+        return res.status(400).json({
+          isSuccess: false,
+          message: `Unexpected fields found: ${unexpectedFields.join(", ")}`,
+          data: null,
+        });
+      }
+      for (const csvColumn in fieldPart) {
+        const modelAttribute = fieldPart[csvColumn];
+        if (csvColumn !== "ID") {
+          if (
+            csvColumn !== "File Name" &&
+            (row[csvColumn] === null || row[csvColumn] === undefined)
+          ) {
+            continue;
+          }
+
+          if (csvColumn === "Start Date" && row[csvColumn]) {
+            packageData[modelAttribute] = moment(
+              row[csvColumn],
+              "DD/MM/YYYY",
+            ).toISOString();
+          } else {
+            packageData[modelAttribute] = row[csvColumn];
+          }
+        }
+      }
+      const existingPackage = await Package.findOne({
+        where: {
+          title: packageData.title,
+          start_date: moment(packageData.start_date).toISOString(),
+          country: packageData.country,
+          state: packageData.state,
+          price: packageData.price,
+          category: packageData.category,
+        },
+      });
+      if (!existingPackage) {
+        packages.push(packageData);
+      } else {
+        existingPackages.push(existingPackage);
+        return res.status(200).json({
+          message: "imported packages already exist",
+        });
+      }
+    }
+
+    const createdPackages = await Package.bulkCreate(packages);
+
+    return res.status(200).json({
+      isSuccess: true,
+      message: "Packages created successfully from imported file",
+      data: createdPackages,
+    });
+  } catch (ex) {
+    return res.status(400).json({
+      isSuccess: false,
+      message: "Error creating packages from imported file",
       data: null,
     });
   }

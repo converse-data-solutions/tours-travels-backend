@@ -48,11 +48,10 @@ export class Package extends Model<Package> {
   superior_twin_price!: string;
 
   @Column(DataType.STRING)
-  category!:string;
+  category!: string;
 
   @Column(DataType.STRING)
   offer!: string;
-
 
   @Column(DataType.STRING)
   booking_fees!: string;
@@ -70,8 +69,7 @@ export class Package extends Model<Package> {
   @Column(DataType.STRING)
   updated_by!: string;
 
-
- @Default(DataType.NOW)
- @Column(DataType.DATE)
+  @Default(DataType.NOW)
+  @Column(DataType.DATE)
   updated_at!: Date;
 }

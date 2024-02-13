@@ -4,7 +4,10 @@ import { json, urlencoded } from "body-parser";
 import userRouter from "./src/routes/user.route";
 import packageRouter from "./src/routes/package.route";
 import bookingRouter from "./src/routes/booking.route";
+import excelRouter from "./src/routes/excel.route";
+import xlsxRouter from "./src/routes/excelxlsx.route";
 import cors from "cors";
+import pdfRouter from "./src/routes";
 const app = express();
 const cookieParser = require("cookie-parser");
 
@@ -33,6 +36,9 @@ app.use(
 app.use("/user", userRouter);
 app.use("/package", packageRouter);
 app.use("/booking", bookingRouter);
+app.use("/index", pdfRouter);
+app.use("/excel", excelRouter);
+app.use("/excelxlsx", xlsxRouter);
 
 connection
   .sync()
