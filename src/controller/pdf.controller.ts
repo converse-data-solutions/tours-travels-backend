@@ -56,6 +56,8 @@ export const exportToPDF = async (
 
     const pdfBuffer = await htmlPDF.create(content);
 
+    console.log(pdfBuffer);
+
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
