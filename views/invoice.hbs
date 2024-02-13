@@ -1,0 +1,75 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Package Information</title>
+
+    <style>
+      table { border-collapse: collapse; width: 94%; margin-left: auto
+      !important; margin-right: auto !important; font-size: 14px !important; }
+      th, td { border: 1px solid black; padding: 8px; text-align: left; } th {
+      background-color: #f2f2f2; } td { width: 20px; height: 30px; }
+      td.description { width: 50px; / max-width: 50px; white-space: wrap;
+      text-overflow: ellipsis; } @page { size: A4; margin: 0.5cm; }
+
+    </style>
+
+  </head>
+  <body>
+    <h1>Package Information</h1>
+    <table border="1" style="margin-left: auto; margin-right:auto: width:90%">
+      <thead>
+
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Start Date</th>
+          <th class="description">Description</th>
+          <th>Price</th>
+          <th>No of Person</th>
+          <th>Days and Night</th>
+          <th>Country</th>
+          <th>State</th>
+          <th>Category</th>
+          <th>Offer</th>
+          <th>Published</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        {{#each packages}}
+
+          <tr>
+            <td>{{this.id}}</td>
+            <td>
+              <div
+                style="width: 80px; max-width: 100px;overflow-wrap: break-word;"
+              >
+                {{this.title}}</div></td>
+            <td>{{this.start_date}}</td>
+            <td class="description">
+              <div
+                style="width: 100px; max-width: 100px;overflow-wrap: break-word;"
+              >
+                {{{this.description}}}
+              </div>
+            </td>
+            <td>{{this.price}}</td>
+            <td>{{this.no_of_person}}</td>
+            <td>{{this.days_and_night}}</td>
+            <td>{{this.country}}</td>
+            <td>{{this.state}}</td>
+            <td>{{this.category}}</td>
+            <td>{{this.offer}}%</td>
+            <td>{{this.published}}</td>
+
+          </tr>
+        {{/each}}
+
+      </tbody>
+    </table>
+    <p>Generated at: {{generatedAt}}</p>
+
+  </body>
+</html>

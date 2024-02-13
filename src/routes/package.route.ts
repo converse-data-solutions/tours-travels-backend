@@ -1,4 +1,5 @@
 import { Router } from "express";
+import multer from "multer";
 
 import {
   createPackage,
@@ -13,11 +14,10 @@ import {
   getAllPackageByOffer,
   filterByDays,
   filterByCategories,
-  filterByDurationType
-
+  filterByDurationType,
+  createPackageByCsv,
 } from "../controller/package.controller";
 import { verify } from "../controller/user.controller";
-import multer from "multer";
 
 const packageRouter = Router();
 
@@ -30,6 +30,22 @@ export const storage = multer.diskStorage({
     cb(null, fileName);
   },
 });
+
+// export const csvStorage=multer.diskStorage({
+//   destination:(req,file,cb)=>{
+//     cb(null,'FileUploads/');
+//   },
+
+// filename: (req, file, cb) => {
+//   const fileName = `${Date.now()}-${file.originalname}`;
+//   cb(null, fileName);
+// },
+
+// })
+
+// const csvStorage=multer({  });
+
+const uploadCsv = multer({ dest: "FileUploads/" });
 
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
@@ -141,12 +157,12 @@ packageRouter.post(
   uploadImageByPackageId,
 );
 
+packageRouter.get("/filter/:country", filterByDays);
 
+packageRouter.get("/groupbycategory/details", filterByCategories);
 
-  packageRouter.get("/filter/:country",filterByDays);
+packageRouter.get("/groupbyduration/details", filterByDurationType);
 
-  packageRouter.get('/groupbycategory/details',filterByCategories);
+packageRouter.post("/importcsv", createPackageByCsv);
 
-  packageRouter.get("/groupbyduration/details",filterByDurationType)
-
- export default packageRouter;
+export default packageRouter;

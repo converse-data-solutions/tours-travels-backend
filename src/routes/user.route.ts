@@ -111,7 +111,7 @@ userRouter.put("/:id", verify, updateUser);
  *       '200':
  *         description: Successful response
  */
-userRouter.delete("/:id",verify, deleteUser);
+userRouter.delete("/:id", verify, deleteUser);
 
 userRouter.post("/upload/:id", upload.single("file"), uploadImageUserid);
 
