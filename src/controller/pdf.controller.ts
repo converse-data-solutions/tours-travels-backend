@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import fs from "fs";
 import { Package } from "../models/package.model";
 import { Op } from "sequelize";
+import puppeteer from "puppeteer";
+
 
 const hbs = require("hbs");
 const PuppeteerHTMLPDF = require("puppeteer-html-pdf");
@@ -49,14 +51,21 @@ export const exportToPDF = async (
 
     const htmlPDF = new PuppeteerHTMLPDF();
     htmlPDF.setOptions({ format: "A4" });
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox"],
+    });
+    
+    const page = await browser.newPage();
 
     const html = await htmlPDF.readFile("views/invoice.hbs", "utf8");
     const template = hbs.compile(html);
     const content = template(pdfData);
 
-    const pdfBuffer = await htmlPDF.create(content);
+    await page.setContent(content);
+    const pdfBuffer = await page.pdf();
 
-    console.log(pdfBuffer);
+    await browser.close();
+
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
