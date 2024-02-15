@@ -73,7 +73,6 @@ export const exportToCSV = async (
 
     await csvWriter.writeRecords(csvData);
 
-console.log("Final CSV Data:", csvData);
 
     const csvFilePath = `${__dirname}/exported-data.csv`;
 
@@ -87,7 +86,6 @@ console.log("Final CSV Data:", csvData);
     const stream = fs.createReadStream(csvFilePath);
     stream.pipe(res);
   } catch (error) {
-    console.error(error);
     res
       .status(500)
       .json({ isSuccess: false, message: "Internal Server Error" });

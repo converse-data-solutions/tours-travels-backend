@@ -76,7 +76,6 @@ export const exportToExcel = async (
 
     const excelFilePath = `${__dirname}/exported-data.xlsx`;
     await workbook.xlsx.writeFile(excelFilePath);
-    console.log("Final Excel Data:", allPackageinfo);
 
     res.setHeader(
       "Content-Type",
