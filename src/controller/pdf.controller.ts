@@ -52,7 +52,7 @@ export const exportToPDF = async (
     const htmlPDF = new PuppeteerHTMLPDF();
     htmlPDF.setOptions({ format: "A4" });
     const browser = await puppeteer.launch({
-      headless:'new',
+      headless:true,
       args: ["single-process","--no-sandbox"],
     });
     
