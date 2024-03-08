@@ -1,10 +1,17 @@
 import express from "express";
 import connection from "./src/config/db.config";
 import { json, urlencoded } from "body-parser";
-import userRouter from "./src/routes/user.route";
-import packageRouter from "./src/routes/package.route";
-import bookingRouter from "./src/routes/booking.route";
+import roleRouter from "./src/routes/role.routes";
+import permissionRouter from "./src/routes/permission.route";
+
 import cors from "cors";
+import idgenRouter from "./src/routes/idgen.route";
+import operationRouter from "./src/routes/operation.route";
+import userRouter from "./src/routes/user.route";
+import countryRouter from "./src/routes/country.route";
+import stateRouter from "./src/routes/state.route";
+import languageRouter from "./src/routes/language.route";
+import currencyRouter from "./src/routes/currecy.route";
 const app = express();
 const cookieParser = require("cookie-parser");
 
@@ -30,9 +37,15 @@ app.use(
     res.status(500).json({ message: err.message });
   },
 );
-app.use("/user", userRouter);
-app.use("/package", packageRouter);
-app.use("/booking", bookingRouter);
+ app.use("/role",roleRouter );
+ app.use("/idgen",idgenRouter);
+ app.use("/permission",permissionRouter);
+ app.use("/operation",operationRouter);
+ app.use("/user",userRouter);
+ app.use("/country",countryRouter);
+ app.use("/state",stateRouter);
+ app.use("/language",languageRouter);
+ app.use("/currency",currencyRouter)
 
 connection
   .sync()

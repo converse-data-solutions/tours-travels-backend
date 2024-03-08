@@ -1,11 +1,18 @@
 import { Sequelize } from "sequelize-typescript";
-import { Userinfo } from "../models/userinfo.model";
-import { Role } from "../models/role.model";
-import { Package } from "../models/package.model";
-import { Booking } from "../models/booknow.model";
+import {Role} from "../model/role.model";
+import { Idgen } from "../model/idgen.model";
+import { Permission } from "../model/permission.model";
+import { Operation } from "../model/operation.model";
+import { User } from "../model/users.model";
+import { Country } from "../model/countries.model";
+import { State } from "../model/states.model";
+import  {Language} from "../model/language.model";
+import { Currency } from "../model/currencies.model";
+import { History } from "../model/usersHistory.model";
 require("dotenv").config();
 
 console.log(process.env.DB_HOST);
+
 
 const connection = new Sequelize({
   dialect: "mysql",
@@ -14,7 +21,7 @@ const connection = new Sequelize({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   logging: false,
-  models: [Userinfo, Role, Package, Booking],
+   models: [Role,Idgen,Permission,Operation,User,Country,State,Language,Currency,History],
 });
 
 export default connection;
